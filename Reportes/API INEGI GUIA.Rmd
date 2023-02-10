@@ -1,0 +1,70 @@
+---
+title: "Consulta de indicadores por R con INEGI"
+author: "Alvaro"
+date: "2023-02-10"
+output: html_document
+---
+Para descargar información del INEGI mediante su API, puedes seguir los siguientes pasos en R Studio:
+
+Regístrate y obtén una clave de acceso (API Key) en el sitio web del INEGI.
+
+Instala y carga la librería httr en R Studio. Este paquete proporciona funciones para hacer solicitudes HTTP y trabajar con las respuestas.
+
+```{r eval=FALSE}
+install.packages("httr")
+library(httr)
+```
+
+
+Construye la URL de la solicitud de la API, incluyendo tu clave de acceso (API Key) en la misma. Por ejemplo, si quieres obtener información sobre el PIB por entidad federativa, la URL podría ser la siguiente:
+```{r eval=FALSE}
+url <- paste0(https://www.inegi.org.mx/JSONSTAT/[IdIndicador]/es/09002/false/[Fuente de datos],[TOKEN],?type=[Formato])
+
+```
+```{r}
+#Ejemplo
+url <- paste("https://www.inegi.org.mx/app/api/indicadores/desarrolladores/jsonxml/INDICATOR/EDU_NIVEL/MUN/false/es/false/6b0f9916-8ddb-0e8c-6145-8462bc30a85a?type=json")
+```
+
+__Indicador__
+El primer paso que se debe realizar para obtener información de la API es seleccionar el indicador e identificar su clave. Esto lo puede realizar consultando el "Constructor de consultas".
+
+__Idioma__
+La información está disponible en español [es] e inglés [en].
+
+__Área geográfica__
+Puede ser nacional [00], por entidad federativa [99] o por municipio [999], dependiendo de cada indicador.
+
+__Dato más reciente o Serie histórica__
+Puede consultarse solo el dato más reciente [true] o la serie histórica completa [false].
+
+__Fuente de datos__
+Corresponde a la fuente de diseminación [BISE] o [BIE] de donde se obtendrán los datos consultados.
+
+__Token__
+Para utilizar la API es necesario mandarle un token válido, el cual puede obtener al registrarse aquí.
+
+__Formato__
+Se requiere usar el tipificador de json-stat [jsonStat]
+
+
+Realiza una solicitud GET a la URL que construiste.
+```{r eval=FALSE}
+response <- GET(url)
+```
+
+Verifica que la solicitud fue exitosa y obtén los datos de la respuesta.
+```{r eval=FALSE}
+if (response$status_code == 200) {
+  data <- content(response)
+} else {
+  stop("Request failed with status code: ", response$status_code)
+}
+```
+
+Transforma los datos en un formato útil para ti, por ejemplo, un data frame de R.
+```{r eval=FALSE}
+df <- as.data.frame(data)
+```
+
+Es posible que debas realizar ajustes adicionales a los datos obtenidos, dependiendo de tus necesidades específicas. Sin embargo, este es el proceso básico para descargar datos del INEGI utilizando su API en R Studio.
