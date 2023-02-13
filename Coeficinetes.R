@@ -41,3 +41,5 @@ ql_coefs <- lapply(grouped_data, function(group) {
     return(NULL)
   }
 })
+
+View(ql_coefs)
