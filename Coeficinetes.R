@@ -11,16 +11,33 @@ data <- readxl::read_xlsx("C:\\Users\\rpm0a\\OneDrive\\Documentos\\RepTemplates\
 
 grouped_data <- group_by(data, CVE_ZM)
 
+# Resumir las variables de interés por la media
 
-# Aplica la función de agregación que deseas (promedio, suma, etc.) a las variables de interés
+grouped_data <- summarise_at(grouped_data, vars(starts_with("ue_"), starts_with("af_"), starts_with("fb_"), 
+                            starts_with("pb_"), starts_with("po_"), starts_with("re_"), 
+                            starts_with("va_")), mean, na.rm = TRUE)
 
-grouped_data <- grouped_data %>% 
-  filter(n() >= 10)
+# Filtrar las variables de interés
 
-cov_matrices <- lapply(grouped_data, function(group) {
-  cov(group[, grep("^ue_|^af_|^fb_|^pb_|^po_|^re_|^va_", names(group))], use = "complete.obs")})
+filtered_data <- grouped_data[, grep("^ue_|^af_|^fb_|^pb_|^po_|^re_|^va_", names(grouped_data))]
 
-#
+# Calcular la matriz de covarianza para cada grupo
 
-cov_matrices <- lapply(grouped_data, function(group) {
-  cov(group[, grep("^ue_|^af_|^fb_|^pb_|^po_|^re_|^va_", names(group))])})
+cov_matrices <- sapply(split(filtered_data, grouped_data$CVE_ZM), function(group) {
+  cov(group)
+})
+
+# Calcular los coeficientes QL respecto a su zona metropolitana
+
+ql_coefs <- lapply(grouped_data, function(group) {
+  n <- ncol(group)
+  if (is.integer(n)) {
+    ql_coefs <- numeric(n)
+    for (i in 1:n) {
+      ql_coefs[i] <- as.numeric(group[i, ] %*% solve(cov_matrices[[i]]) %*% t(group[i, ]))
+    }
+    return(ql_coefs)
+  } else {
+    return(NULL)
+  }
+})
