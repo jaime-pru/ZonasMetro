@@ -23,9 +23,8 @@ filtered_data <- grouped_data[, grep("^ue_|^af_|^fb_|^pb_|^po_|^re_|^va_", names
 
 # Calcular la matriz de covarianza para cada grupo
 
-cov_matrices <- sapply(split(filtered_data, grouped_data$CVE_ZM), function(group) {
-  cov(group)
-})
+cov_matrices <- sapply(grouped_data, function(group) {
+  cov(group[, grep("^ue_|^af_|^fb_|^pb_|^po_|^re_|^va_", names(group))])})
 
 # Calcular los coeficientes QL respecto a su zona metropolitana
 
