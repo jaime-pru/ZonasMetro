@@ -21,12 +21,17 @@ datos_econ <- data %>% select(cvegeo, CVE_ZM, cve_sub, ue, af, fb, pb, po, re, v
 # Calcular coeficientes QL
 
 QL <- datos_econ %>%
-  group_by(CVE_ZM, cvegeo,cve_sub) %>%
+  group_by(CVE_ZM, cvegeo, cve_sub) %>%
   summarise(subsec_mun = sum(po, na.rm = TRUE),
-            tot_mun = sum(po, na.rm = TRUE)
+            tot_mun = sum(po, na.rm = TRUE),
             subsec_zm = sum(po, na.rm = TRUE),
             tot_zm = sum(po, na.rm = TRUE)) %>%
-  mutate(QL = subsec_mun / tot_mun / (subsec_zm / tot_zm)) %>%
+  group_by(CVE_ZM, cvegeo, cve_sub) %>%
+  mutate(subsec_mun = sum(subsec_mun),
+         tot_mun = sum(tot_mun),
+         subsec_zm = sum(subsec_zm),
+         tot_zm = sum(tot_zm)) %>%
+  mutate(QL = round((subsec_mun / tot_mun) / (subsec_zm / tot_zm), 3)) %>%
   select(CVE_ZM, cvegeo, QL)
 
 View(QL)
