@@ -1,0 +1,67 @@
+---
+title: "Base Sociodemo"
+author: "Alvaro"
+date: "2023-02-13"
+output: html_document
+runtime: shiny
+---
+
+La base socio-demográfica se obtuvo de los Censos de Población y Vivienda, 2020, en el apartado de Tabulados/Características de las localidades. La base original de INEGI se filtro solo para la información a nivel municipal y se eliminaron algunas variables sin relevancia.
+
+```{r}
+#Importación de la base
+library(readxl)
+Base_sociodemo <- read_excel("C:/Users/RPM-UAM-AZC/Desktop/Base _sociodemo.xlsx")
+
+```
+
+```{r}
+#Se crea la variable cve_geo
+Base_sociodemo$cvegeo <- paste(Base_sociodemo$CVE_ENT, Base_sociodemo$MUN, sep = "")
+
+```
+
+```{r}
+#Eliminar variables que no se pueden 
+
+```
+
+Se utiliza la función 'renderUI' del paquete Shiny para crear un menú interactivo en un informe esta función se utiliza junto con la función 'uiOutput' para mostrar la salida en el informe.
+
+Con renderUI se crea una lista desplegable en la que el usuario pueda seleccionar una variable. Luego, con la ayuda de un controlador en el servidor (observeEvent), se puede responder a la selección del usuario y actualizar la información mostrada en el informe.
+
+```{r}
+library(shiny)
+
+
+# Crear la interfaz de usuario
+ui <- fluidPage(
+  selectInput("cvegeo", "Seleccione un municipio:",
+              choices = unique(Base_sociodemo$cvegeo)),
+  verbatimTextOutput("pobtot"),
+  verbatimTextOutput("pobfem")
+)
+
+# Crear el servidor
+server <- function(input, output) {
+  
+  # Mostrar los datos de POB_TOT y POBFEM para el registro seleccionado
+  output$pobtot <- renderText({
+  paste("Población total:", Base_sociodemo[Base_sociodemo$cvegeo == input$cvegeo,]$POBTOT)
+  })
+
+  output$pobfem <- renderText({
+  paste("Población femenina:", Base_sociodemo[Base_sociodemo$cvegeo == input$cvegeo,]$POBFEM)
+  })
+}
+
+# Ejecutar la aplicación Shiny
+shinyApp(ui, server)
+
+```
+
+
+frontera norte
+colmex
+
+
