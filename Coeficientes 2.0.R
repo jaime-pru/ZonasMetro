@@ -23,7 +23,12 @@ subsec_zm <- datos %>% group_by(CVE_ZM, cve_sub) %>% summarize(po=sum(po))
 
 tot_zm <- datos %>% group_by(CVE_ZM) %>% summarize(po=sum(po))
 
+# Operacion para estimar QL
 
+resultados <- data.frame(cvegeo = subsec_mun$cvegeo, cve_sub = subsec_mun$cve_sub)
+View(resultados)
 
-
-
+resultados_operacion <- subsec_mun %>%
+  group_by(cvegeo, cve_sub) %>%
+  summarize(operacion = sum(tot_zm * po_subzec_mun) / sum(subsec_zm * po_subsec_zm * tot_mun$po)) %>%
+  ungroup()
