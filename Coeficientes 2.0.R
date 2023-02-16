@@ -31,23 +31,6 @@ tot_zm$po_tot_zm <- aggregate(po ~ CVE_ZM, data = subsec_zm, sum)$po
 
 subsec_zm$po_subsec_zm <- aggregate(po ~ CVE_ZM + cve_sub, data = subsec_zm, sum)$po
 
-# Realizar la operación
-
-resultado_operacion <- ((tot_zm$po)*(subsec_mun$po)) / ((subsec_zm$po)*tot_mun$po)
-View(resultado_operacion)
-
-# Agregar columna "cve_sub" a "resultados"
-
-resultados <- cbind(resultados, cve_sub = subsec_mun$cve_sub)
-
-# Crear dataframe "resultados"
-
-resultados <- data.frame(cvegeo = subsec_mun$cvegeo, operacion = resultado_operacion)
+geo, cve_sub = datos_combinados$cve_sub, operacion = operacion)
 
 
-View(resu)
-
-
-# Agregar los resultados al dataframe "resultados"
-
-resultados$operacion <- resultado_operacion
