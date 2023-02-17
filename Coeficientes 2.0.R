@@ -25,46 +25,26 @@ subsec_zm <- datos %>% group_by(CVE_ZM, cve_sub) %>% summarize(po=sum(po))
 
 tot_zm <- datos %>% group_by(CVE_ZM) %>% summarize(po=sum(po))
 
+# Numerador
 
-# Combinar data frames
+subsec_mun_div <- left_join(subsec_mun, tot_mun, by = c("cvegeo" = "cvegeo", "CVE_ZM" = "CVE_ZM")) %>% 
+  mutate(po = po.x/po.y) %>% 
+  select(-po.x, -po.y)
 
-combinado <- full_join(subsec_mun, tot_mun, by = "cvegeo") %>%
-  full_join(subsec_zm, by = c("cve_sub", "CVE_ZM"))
+# Denominador
 
-# Calcular división
+# Unir vectores subsec_zm y tot_zm por CVE_ZM
+subsec_tot_zm <- left_join(subsec_zm, tot_zm, by = "CVE_ZM")
 
-combinado <- combinado %>%
-  mutate(division = po.x / po.y)
+# Dividir los valores de subsec_zm entre los valores de tot_zm por CVE_ZM
+subsec_tot_zm_div <- subsec_tot_zm %>%
+  mutate(po_div = po.x / po.y)
+View(subsec_tot_zm_div)
 
-# Seleccionar columnas de interés
-
-combinado <- combinado %>% select(cvegeo, CVE_ZM, cve_sub, division)
-View(combinado)
-
-#Guardar xlsx
-
-library(openxlsx)
-
-write.xlsx(combinado, "COMBINADO.xlsx")
+# Resultado final QL
 
 
 
-
-
-
-
-
-
-
-# Crear vector resultado (QL)
-
-resultado <- (subsec_mun$po / tot_mun$po) / (subsec_zm$po / tot_zm$po)
-
-# Combinar los resultados en un data frame
-
-resultados <- data.frame(cvegeo = subsec_mun$cvegeo, cve_sub = subsec_mun$cve_sub, QL = resultado)
-
-View(resultados)
 
 #Guardar xlsx
 
@@ -72,14 +52,4 @@ library(openxlsx)
 
 write.xlsx(resultados, "resultados.xlsx")
 
-
-# Crear vector resultado (PR)
-
-PR <- (subsec_mun$po / subsec_zm$po) 
-
-# Combinar los resultados en un data frame
-
-PR <- data.frame(cvegeo = subsec_mun$cvegeo, cve_sub = subsec_mun$cve_sub, operacion = resultado)
-
-View(PR)
 
