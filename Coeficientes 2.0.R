@@ -39,33 +39,28 @@ subsec_tot_zm <- left_join(subsec_zm, tot_zm, by = "CVE_ZM")
 
 # Dividir los valores de subsec_zm entre los valores de tot_zm por CVE_ZM
 subsec_tot_zm_div <- subsec_tot_zm %>%
-  mutate(po_div = po.x / po.y)
+  mutate(po_div = po.x / po.y) %>% 
+  select(-po.x, -po.y)
 View(subsec_tot_zm_div)
 
 # Resultado final QL
 
-# Ordenar subsec_mun_div por cvegeo, CVE_ZM y cve_sub
-subsec_mun_div <- subsec_mun_div %>% arrange(cvegeo, CVE_ZM, cve_sub)
-
-# Ordenar subsec_tot_zm_div por CVE_ZM y cve_sub
-subsec_tot_zm_div <- subsec_tot_zm_div %>% arrange(CVE_ZM, cve_sub)
-
 # Unir subsec_mun_div y subsec_tot_zm_div por CVE_ZM y cve_sub
-df <- left_join(subsec_mun_div, subsec_tot_zm_div, by = c("CVE_ZM", "cve_sub"))
+
+QL <- left_join(subsec_mun_div, subsec_tot_zm_div, by = c("CVE_ZM", "cve_sub"))
 
 # Dividir po de subsec_mun_div entre po_div de subsec_tot_zm_div 
-df <- df %>% mutate(QL = po / po_div)
 
-View(df)
+QL <- QL %>% mutate(QL = po / po_div) %>% 
+  select(-po, -po_div)
 
-# Seleccionar columnas deseadas
-df <- df %>% select(cvegeo, CVE_ZM, cve_sub, po, po_div)
-
+View(QL)
+View(datos)
 
 #Guardar xlsx
 
 library(openxlsx)
 
-write.xlsx(df, "resultados2.xlsx")
+write.xlsx(QL, "resultados2.xlsx")
 
 
