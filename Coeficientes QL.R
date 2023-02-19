@@ -16,7 +16,6 @@ subsec_mun <- datos %>% group_by(cvegeo, cve_sub, CVE_ZM) %>% summarize(ue = sum
                                                                         po = sum(po, na.rm = TRUE), 
                                                                         re = sum(re, na.rm = TRUE), 
                                                                         va = sum(va, na.rm = TRUE))
-View(subsec_mun)
 
 # Crear vector tot_mun
 
@@ -37,6 +36,7 @@ subsec_zm <- datos %>% group_by(CVE_ZM, cve_sub) %>% summarize(ue = sum(ue, na.r
                                                                po = sum(po, na.rm = TRUE), 
                                                                re = sum(re, na.rm = TRUE), 
                                                                va = sum(va, na.rm = TRUE))
+
 # Crear vector tot_zm
 
 tot_zm <- datos %>% group_by(CVE_ZM) %>% summarize(ue = sum(ue, na.rm = TRUE), 
@@ -53,7 +53,7 @@ tot_zm <- datos %>% group_by(CVE_ZM) %>% summarize(ue = sum(ue, na.rm = TRUE),
 subsec_mun_div <- left_join(subsec_mun, tot_mun, by = c("cvegeo" = "cvegeo", "CVE_ZM" = "CVE_ZM")) %>% 
   mutate(ue = ue.x/ue.y, af = af.x/af.y, fb = fb.x/fb.y, pb = pb.x/pb.y, po = po.x/po.y, re = re.x/re.y, va = va.x/va.y) %>% 
   select(-ue.x, -ue.y, -af.x, -af.y, -fb.x, -fb.y, -pb.x, -pb.y, -po.x, -po.y, -re.x, -re.y, -va.x, -va.y)
-View(subsec_mun_div)
+
 # Denominador
 
 # Unir vectores subsec_zm y tot_zm por CVE_ZM
@@ -61,10 +61,12 @@ View(subsec_mun_div)
 subsec_tot_zm <- left_join(subsec_zm, tot_zm, by = "CVE_ZM")
 
 # Dividir los valores de subsec_zm entre los valores de tot_zm por CVE_ZM
+
 subsec_tot_zm_div <- subsec_tot_zm %>%
   mutate(ue.div = ue.x/ue.y, af.div = af.x/af.y, fb.div = fb.x/fb.y, pb.div = pb.x/pb.y, po.div = po.x/po.y, re.div = re.x/re.y, va.div = va.x/va.y) %>% 
   select(-ue.x, -ue.y, -af.x, -af.y, -fb.x, -fb.y, -pb.x, -pb.y, -po.x, -po.y, -re.x, -re.y, -va.x, -va.y)
 View(subsec_tot_zm_div)
+
 # Resultado final QL
 
 # Unir subsec_mun_div y subsec_tot_zm_div por CVE_ZM y cve_sub
