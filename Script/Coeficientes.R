@@ -105,4 +105,11 @@ View(datos_ql)
 BLzm99_final <- left_join(datos_ql, PR, by = c("cvegeo", "cve_sub", "CVE_ZM"))
 View(BLzm99_final)
 
+# Guardar archivo
+
+library(openxlsx)
+
+write.xlsx(BLzm99_final, "BLzm99_final.xlsx")
+
+
 
