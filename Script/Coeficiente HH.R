@@ -110,11 +110,13 @@ resta <- tot_mun %>%
   select(cvegeo, CVE_ZM, Rue,Raf, Rfb, Rpb, Rpo, Rre, Rva)
 
 View(resta)
-
+View(tot_mun)
+View(tot_zm)
 # Estimar HH
 
 HH <- PR %>% 
-  left_join(resta, by = c("CVE_ZM")) %>% 
+  
+  left_join(resta, by = c("cvegeo", "CVE_ZM")) %>% 
   mutate(HHue = PRue - Rue,
          HHaf = PRaf - Raf,
          HHfb = PRfb - Rfb,
@@ -122,8 +124,15 @@ HH <- PR %>%
          HHpo = PRpo - Rpo,
          HHre = PRre - Rre,
          HHva = PRva - Rva) %>% 
-  select(cvegeo, CVE_ZM, HHue,HHaf, HHfb, HHpb, HHpo, HHre, HHva)
-View(datos)
+  select(cvegeo, cve_sub, CVE_ZM, HHue,HHaf, HHfb, HHpb, HHpo, HHre, HHva)
+
+View(HH)
+
+# Estimar IHH
+
+IHH <- HH %>%
+  mutate_at(vars(HHue, HHaf, HHfb, HHpb, HHpo, HHre, HHva), ~ 1 - .)
+View(IHH)
 
 # Unir datos con QL
 
