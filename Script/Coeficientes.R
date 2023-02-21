@@ -5,7 +5,7 @@ library(dplyr)
 
 # Leer datos desde un archivo xlsx
 
-datos <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases temporales\\BL_zm99.xlsx")
+datos <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases temporales\\Bases Largas\\BL_zm99.xlsx")
 
 # Crear vector subsec_mun
 
@@ -93,16 +93,56 @@ PR <- subsec_mun %>%
   select(cvegeo, cve_sub, CVE_ZM, PRue, PRaf, PRfb, PRpb, PRpo, PRre, PRva)
 
 View(PR)
-View(datos)
 
-# Unir datos con QL
+# Estimar coeficiente HH
 
-datos_QL <- left_join(datos, QL, by = c("cvegeo", "cve_sub", "CVE_ZM"))
-View(datos_ql)
+# Estimar la parte que se resta
 
-# Unir datos_QL con PR
+resta <- tot_mun %>% 
+  left_join(tot_zm, by = c("CVE_ZM")) %>% 
+  mutate(Rue = ue.x / ue.y,
+         Raf = af.x / af.y,
+         Rfb = fb.x / fb.y,
+         Rpb = pb.x / pb.y,
+         Rpo = po.x / po.y,
+         Rre = re.x / re.y,
+         Rva = va.x / va.y) %>% 
+  select(cvegeo, CVE_ZM, Rue,Raf, Rfb, Rpb, Rpo, Rre, Rva)
 
-BLzm99_final <- left_join(datos_ql, PR, by = c("cvegeo", "cve_sub", "CVE_ZM"))
+View(resta)
+View(tot_mun)
+View(tot_zm)
+# Estimar HH
+
+HH <- PR %>% 
+  
+  left_join(resta, by = c("cvegeo", "CVE_ZM")) %>% 
+  mutate(HHue = PRue - Rue,
+         HHaf = PRaf - Raf,
+         HHfb = PRfb - Rfb,
+         HHpb = PRpb - Rpb,
+         HHpo = PRpo - Rpo,
+         HHre = PRre - Rre,
+         HHva = PRva - Rva) %>% 
+  select(cvegeo, cve_sub, CVE_ZM, HHue,HHaf, HHfb, HHpb, HHpo, HHre, HHva)
+
+View(HH)
+
+# Estimar IHH
+
+IHH <- HH %>%
+  mutate_at(vars(HHue, HHaf, HHfb, HHpb, HHpo, HHre, HHva), ~ 1 - .) %>%
+  rename_with(~ paste0("IHH", gsub("HH", "", .)), starts_with("HH"))
+
+View(IHH)
+
+# Unir datos 
+
+BLzm99_final <- left_join(datos, QL, by = c("cvegeo", "cve_sub", "CVE_ZM")) %>%
+  left_join(PR, by = c("cvegeo", "cve_sub", "CVE_ZM")) %>%
+  left_join(HH, by = c("cvegeo", "cve_sub", "CVE_ZM")) %>%
+  left_join(IHH, by = c("cvegeo", "cve_sub", "CVE_ZM"))
+
 View(BLzm99_final)
 
 # Guardar archivo

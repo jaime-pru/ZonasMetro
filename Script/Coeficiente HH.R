@@ -144,7 +144,7 @@ BLzm99_final <- left_join(datos, QL, by = c("cvegeo", "cve_sub", "CVE_ZM")) %>%
   left_join(IHH, by = c("cvegeo", "cve_sub", "CVE_ZM"))
 
 View(BLzm99_final)
-View(datos)
+
 # Guardar archivo
 
 library(openxlsx)
