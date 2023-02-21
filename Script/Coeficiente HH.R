@@ -5,7 +5,7 @@ library(dplyr)
 
 # Leer datos desde un archivo xlsx
 
-datos <- read_excel("C:\\Users\\rpm0a\\OneDrive\\Documentos\\RepTemplates\\ZonasMetro\\Bases temporales\\Bases Largas\\BL_zm99.xlsx")
+datos <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases temporales\\Bases Largas\\BL_zm99.xlsx")
 
 # Crear vector subsec_mun
 
@@ -131,19 +131,20 @@ View(HH)
 # Estimar IHH
 
 IHH <- HH %>%
-  mutate_at(vars(HHue, HHaf, HHfb, HHpb, HHpo, HHre, HHva), ~ 1 - .)
+  mutate_at(vars(HHue, HHaf, HHfb, HHpb, HHpo, HHre, HHva), ~ 1 - .) %>%
+  rename_with(~ paste0("IHH", gsub("HH", "", .)), starts_with("HH"))
+
 View(IHH)
 
-# Unir datos con QL
+# Unir datos 
 
-datos_QL <- left_join(datos, QL, by = c("cvegeo", "cve_sub", "CVE_ZM"))
-View(datos_ql)
+BLzm99_final <- left_join(datos, QL, by = c("cvegeo", "cve_sub", "CVE_ZM")) %>%
+  left_join(PR, by = c("cvegeo", "cve_sub", "CVE_ZM")) %>%
+  left_join(HH, by = c("cvegeo", "cve_sub", "CVE_ZM")) %>%
+  left_join(IHH, by = c("cvegeo", "cve_sub", "CVE_ZM"))
 
-# Unir datos_QL con PR
-
-BLzm99_final <- left_join(datos_ql, PR, by = c("cvegeo", "cve_sub", "CVE_ZM"))
 View(BLzm99_final)
-
+View(datos)
 # Guardar archivo
 
 library(openxlsx)
