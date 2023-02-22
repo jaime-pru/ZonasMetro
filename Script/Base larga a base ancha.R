@@ -6,7 +6,7 @@ library(tidyr)
 
 # Cargar archivo excel
 
-datos <- read_excel("C:\\Users\\rpm0a\\OneDrive\\Documentos\\RepTemplates\\ZonasMetro\\Bases temporales\\Bases Largas Finales\\BLzm14_final.xlsx")
+datos <- read_excel("C:\\Users\\rpm0a\\OneDrive\\Documentos\\RepTemplates\\ZonasMetro\\Bases temporales\\Bases Largas Finales\\BLzm19_final.xlsx")
 
 # Seleccionar solo las columnas relevantes
 df <- datos %>% 
@@ -31,10 +31,10 @@ df_wide <- df %>%
 
 # Unir valores únicos de cvegeo con datos agrupados por cve_sub
 
-zm14 <- left_join(df_distinct, df_wide, by = "cvegeo")
-View(zm14)
+zm19 <- left_join(df_distinct, df_wide, by = "cvegeo")
+View(zm19)
 
 # Guardar como archivo xlsx
 
 library(openxlsx)
-write.xlsx(zm14, "zm14.xlsx")
+write.xlsx(zm19, "zm19.xlsx")
