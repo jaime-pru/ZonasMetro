@@ -1,67 +1,74 @@
 ---
-title: "Base Sociodemo"
+title: "Prueba de descripción con la base socio demo"
 author: "Alvaro"
-date: "2023-02-13"
+date: "2023-02-27"
 output: html_document
 runtime: shiny
 ---
-
 La base socio-demográfica se obtuvo de los Censos de Población y Vivienda, 2020, en el apartado de Tabulados/Características de las localidades. La base original de INEGI se filtro solo para la información a nivel municipal y se eliminaron algunas variables sin relevancia.
-
-```{r}
-#Importación de la base
-library(readxl)
-Base_sociodemo <- read_excel("C:/Users/RPM-UAM-AZC/Desktop/Base _sociodemo.xlsx")
-
-```
-
-```{r}
-#Se crea la variable cve_geo
-Base_sociodemo$cvegeo <- paste(Base_sociodemo$CVE_ENT, Base_sociodemo$MUN, sep = "")
-
-```
-
-```{r}
-#Eliminar variables que no se pueden 
-
-```
 
 Se utiliza la función 'renderUI' del paquete Shiny para crear un menú interactivo en un informe esta función se utiliza junto con la función 'uiOutput' para mostrar la salida en el informe.
 
 Con renderUI se crea una lista desplegable en la que el usuario pueda seleccionar una variable. Luego, con la ayuda de un controlador en el servidor (observeEvent), se puede responder a la selección del usuario y actualizar la información mostrada en el informe.
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Importación de la base
+library(readxl)
 library(shiny)
+library(dplyr)
+library(tidyverse)
+library(openxlsx)
+library(shinyWidgets)
+
+Base_sociodemo <- read_excel("C:/Users/RPM-UAM-AZC/Desktop/Base _sociodemo.xlsx")
+zm19 <- read_excel("C:/Users/RPM-UAM-AZC/Desktop/zm19.xlsx")
+
+#Se crea la variable cve_geo
+Base_sociodemo$cvegeo <- paste(Base_sociodemo$CVE_ENT, Base_sociodemo$MUN, sep = "")
+
+#Colocación de las claves de zona metropolitana
+Variables <- select(zm19, cvegeo,  CVE_ZM,  NOM_ZM)
+Base_sociodemo <- merge(Base_sociodemo, Variables, by = "cvegeo", all = TRUE)
 
 
-# Crear la interfaz de usuario
+##Comienza la aplicación
+
 ui <- fluidPage(
-  selectInput("cvegeo", "Seleccione un municipio:",
-              choices = unique(Base_sociodemo$cvegeo)),
-  verbatimTextOutput("pobtot"),
-  verbatimTextOutput("pobfem")
+  selectInput("zmvm",
+              "Selecciona una ZM:", unique(Base_sociodemo$NOM_ZM), selected = NULL),
+  selectInput("variables", "Selecciona variables sociodemograficas a mostrar:",
+    choices = names(Base_sociodemo), multiple = TRUE, selected = NULL),
+  selectInput("variables2", "Selecciona variables economicas a mostrar:",
+    choices = names(zm19), multiple = TRUE, selected = NULL),
+  tableOutput("informacion"),
+  downloadButton("descargar", "Descargar tabla")
 )
-
-# Crear el servidor
+#Vincula la entrada de usuario con el servidor
 server <- function(input, output) {
   
-  # Mostrar los datos de POB_TOT y POBFEM para el registro seleccionado
-  output$pobtot <- renderText({
-  paste("Población total:", Base_sociodemo[Base_sociodemo$cvegeo == input$cvegeo,]$POBTOT)
+  output$informacion <- renderTable({
+    datos <- merge(subset(Base_sociodemo, NOM_ZM == input$zmvm),
+    subset(zm19, NOM_ZM == input$zmvm), 
+    by = "cvegeo",
+    all = TRUE)
+    tabla <- datos[,c(input$variables, input$variables2), drop = FALSE]
   })
-
-  output$pobfem <- renderText({
-  paste("Población femenina:", Base_sociodemo[Base_sociodemo$cvegeo == input$cvegeo,]$POBFEM)
-  })
+  
+#Función para descarfar la tabla de datos en CSV
+  output$descargar <- downloadHandler(
+    filename = function() {
+      paste("Tabla-", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      datos <- merge(subset(Base_sociodemo, NOM_ZM == input$zmvm),
+                     subset(zm19, NOM_ZM == input$zmvm), 
+                     by = "cvegeo",
+                     all = TRUE)
+      tabla <- datos[,c(input$variables, input$variables2), drop = FALSE]
+      write.csv(tabla, file, row.names = FALSE, fileEncoding = "UTF-8")
+    }
+  )       
 }
 
-# Ejecutar la aplicación Shiny
 shinyApp(ui, server)
-
 ```
-
-
-frontera norte
-colmex
-
-
