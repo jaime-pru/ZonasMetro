@@ -1,10 +1,16 @@
 ---
-title: "Prueba de descripción con la base socio demo"
+title: "Ficha de Información Metropolitana"
 author: "Alvaro"
 date: "2023-02-27"
 output: html_document
 runtime: shiny
 ---
+<div style="text-align: justify">  <div/>
+
+La ficha de información metropolitana es un recurso valioso para la planificación territorial en zonas metropolitanas. En ella se incluyen datos censales en diversos formatos, como gráficas, tablas y mapas provenientes principalmente de los censos económicos de los años 1999, 2004, 2009, 2014 y 2019. A su vez, también incluye información de los censos de población y vivienda del año 2020, ambos censos son publicados por el Instituto Nacional de Estadística y Geografía (INEGI).
+
+El propósito principal de esta ficha es proporcionar datos esenciales para la planificación territorial a nivel de zona metropolitana. Es decir, esta ficha incluye ciertos conjuntos de datos que recopilen inicialmente el proceso de planificación, los cuales describen las características socioeconómicas y espaciales de la zona. Por tanto, estos datos son particularmente útiles en una etapa de diagnóstico y formulación de objetivos, así como el planteamiento de una hipótesis en la planificación.
+
 La base socio-demográfica se obtuvo de los Censos de Población y Vivienda, 2020, en el apartado de Tabulados/Características de las localidades. La base original de INEGI se filtro solo para la información a nivel municipal y se eliminaron algunas variables sin relevancia.
 
 Se utiliza la función 'renderUI' del paquete Shiny para crear un menú interactivo en un informe esta función se utiliza junto con la función 'uiOutput' para mostrar la salida en el informe.
@@ -20,8 +26,8 @@ library(tidyverse)
 library(openxlsx)
 library(shinyWidgets)
 
-Base_sociodemo <- read_excel("C:/Users/RPM-UAM-AZC/Desktop/Base _sociodemo.xlsx")
-zm19 <- read_excel("C:/Users/RPM-UAM-AZC/Desktop/zm19.xlsx")
+Base_sociodemo <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases de datos\\Base _sociodemo.xlsx")
+zm19 <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases de datos\\zm19.xlsx")
 
 #Se crea la variable cve_geo
 Base_sociodemo$cvegeo <- paste(Base_sociodemo$CVE_ENT, Base_sociodemo$MUN, sep = "")
