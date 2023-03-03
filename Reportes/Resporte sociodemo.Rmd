@@ -7,15 +7,16 @@ runtime: shiny
 ---
 <div style="text-align: justify">  <div/>
 
-La ficha de información metropolitana es un recurso valioso para la planificación territorial en zonas metropolitanas. En ella se incluyen datos censales en diversos formatos, como gráficas, tablas y mapas provenientes principalmente de los censos económicos de los años 1999, 2004, 2009, 2014 y 2019. A su vez, también incluye información de los censos de población y vivienda del año 2020, ambos censos son publicados por el Instituto Nacional de Estadística y Geografía (INEGI).
+La ficha de información metropolitana es una herramienta útil para la planificación territorial en zonas metropolitanas. Esta ficha contiene datos censales en diferentes formatos, como gráficos, tablas y mapas.
+El propósito principal de esta ficha es proporcionar datos esenciales para la planificación territorial a nivel de zona metropolitana. Es decir, incluye ciertos conjuntos de datos que recopilan inicialmente el proceso de planificación, los cuales describen las características socioeconómicas y espaciales de la zona.
 
-El propósito principal de esta ficha es proporcionar datos esenciales para la planificación territorial a nivel de zona metropolitana. Es decir, esta ficha incluye ciertos conjuntos de datos que recopilen inicialmente el proceso de planificación, los cuales describen las características socioeconómicas y espaciales de la zona. Por tanto, estos datos son particularmente útiles en una etapa de diagnóstico y formulación de objetivos, así como el planteamiento de una hipótesis en la planificación.
+Sin embargo, es importante destacar que la planificación territorial requiere de un análisis detallado del territorio y de las decisiones específicas que se deben tomar, a partir de las problemáticas específicas y sistémicas, así como las potencialidades del territorio. En este sentido, la ficha proporciona una base sólida de datos, pero es fundamental complementarla con un análisis más detallado y personalizado.
 
-La base socio-demográfica se obtuvo de los Censos de Población y Vivienda, 2020, en el apartado de Tabulados/Características de las localidades. La base original de INEGI se filtro solo para la información a nivel municipal y se eliminaron algunas variables sin relevancia.
+Para crear un menú interactivo en esta serie de fichas, se utiliza la función 'renderUI' del paquete Shiny en conjunto con la función 'uiOutput'. Con renderUI se crea una lista desplegable en la que el usuario pueda seleccionar una variable. Luego, con la ayuda de un controlador en el servidor (observeEvent), se puede responder a la selección del usuario y actualizar la información mostrada en el informe. 
 
-Se utiliza la función 'renderUI' del paquete Shiny para crear un menú interactivo en un informe esta función se utiliza junto con la función 'uiOutput' para mostrar la salida en el informe.
+Para la información sociodemográfica se recurrio a los Censos de Población y Vivienda, 2020, en el apartado de Tabulados/Características de las localidades. La base original del Instituto Nacional de Estadística y Geografía (INEGI) se filtró solo para la información a nivel municipal y se eliminaron algunas variables sin relevancia.
 
-Con renderUI se crea una lista desplegable en la que el usuario pueda seleccionar una variable. Luego, con la ayuda de un controlador en el servidor (observeEvent), se puede responder a la selección del usuario y actualizar la información mostrada en el informe.
+En cuanto a la información económica se recurrio a los Censos Económicos publicados por INEGI en el periodo de 1999-2019. Dicha información se proceso a nivel subsector y se estimaron los coeficientes de localización económica (QL), participación relativa (PR),  Hirschmann Herfindahl(HH) y el inverso de Hirschmann Herfindahl(IHH) de cada municipio respecto a su zona metropolitana.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 #Importación de la base
@@ -26,8 +27,8 @@ library(tidyverse)
 library(openxlsx)
 library(shinyWidgets)
 
-Base_sociodemo <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases de datos\\Base _sociodemo.xlsx")
-zm19 <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases de datos\\zm19.xlsx")
+Base_sociodemo <- read_excel("C:\\Users\\rpm0a\\OneDrive\\Documentos\\RepTemplates\\ZonasMetro\\Bases de datos\\Base _sociodemo.xlsx")
+zm19 <- read_excel("C:\\Users\\rpm0a\\OneDrive\\Documentos\\RepTemplates\\ZonasMetro\\Bases de datos\\zm19.xlsx")
 
 #Se crea la variable cve_geo
 Base_sociodemo$cvegeo <- paste(Base_sociodemo$CVE_ENT, Base_sociodemo$MUN, sep = "")
@@ -60,7 +61,7 @@ server <- function(input, output) {
     tabla <- datos[,c(input$variables, input$variables2), drop = FALSE]
   })
   
-#Función para descarfar la tabla de datos en CSV
+#Función para descargar la tabla de datos en CSV
   output$descargar <- downloadHandler(
     filename = function() {
       paste("Tabla-", Sys.Date(), ".csv", sep = "")
