@@ -40,12 +40,14 @@ Base_sociodemo <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMe
 
 #Se crea la variable cve_geo
 Base_sociodemo$cvegeo <- paste(Base_sociodemo$CVE_ENT, Base_sociodemo$MUN, sep = "")
+
 #Colocación de las claves de zona metropolitana
 
 Variables <- select(zm19, cvegeo,  CVE_ZM,  NOM_ZM)
 Base_sociodemo <- merge(Base_sociodemo, Variables, by = "cvegeo", all = TRUE)
 
 ##Comienza la aplicación
+
 ui <- fluidPage(
   selectInput("zmvm",
               "Selecciona una ZM:",
@@ -56,18 +58,9 @@ ui <- fluidPage(
               choices = names(Base_sociodemo),
               multiple = TRUE,
               selected = NULL),
-  selectInput("anios",
-              "Selecciona el año de las variables económicas:",
-              choices = c("1999" = "zm99",
-                          "2004" = "zm04",
-                          "2009" = "zm09",
-                          "2014" = "zm14",
-                          "2019" = "zm19"),
-              multiple = TRUE,
-              selected = NULL),
   selectInput("variables2",
               "Selecciona variables economicas a mostrar:",
-              choices = names(zm19),
+              choices = names(zm99), names(zm04), names(zm09), names(zm14), names(zm19)
               multiple = TRUE,
               selected = NULL),
   actionButton("ver_municipios", "Ver municipios"),
