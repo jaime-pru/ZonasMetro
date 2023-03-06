@@ -5,11 +5,11 @@ library(dplyr)
 
 # Leer datos desde un archivo xlsx
 
-datos <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases temporales\\Bases Largas\\BL_zm99.xlsx")
+datos <- read_excel("C:\\Users\\rpm0a\\OneDrive\\Documentos\\RepTemplates\\ZonasMetro\\Bases temporales\\Bases Agrupadas\\Bases Largas Agrupadas\\BLzm99a.xlsx")
 
 # Crear vector subsec_mun
 
-subsec_mun <- datos %>% group_by(cvegeo, cve_sub, CVE_ZM) %>% summarize(ue = sum(ue, na.rm = TRUE), 
+subsec_mun <- datos %>% group_by(cvegeo, sect, CVE_ZM) %>% summarize(ue = sum(ue, na.rm = TRUE), 
                                                                         af = sum(af, na.rm = TRUE),  
                                                                         fb = sum(fb, na.rm = TRUE), 
                                                                         pb = sum(pb, na.rm = TRUE), 
@@ -29,7 +29,7 @@ tot_mun <- datos %>% group_by(cvegeo, CVE_ZM) %>% summarize(ue = sum(ue, na.rm =
 
 # Crear vector subsec_zm
 
-subsec_zm <- datos %>% group_by(CVE_ZM, cve_sub) %>% summarize(ue = sum(ue, na.rm = TRUE), 
+subsec_zm <- datos %>% group_by(CVE_ZM, sect) %>% summarize(ue = sum(ue, na.rm = TRUE), 
                                                                af = sum(af, na.rm = TRUE),  
                                                                fb = sum(fb, na.rm = TRUE), 
                                                                pb = sum(pb, na.rm = TRUE), 
