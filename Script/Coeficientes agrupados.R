@@ -116,15 +116,14 @@ View(resta)
 # Estimar HH
 
 HH <- PR %>% 
-  
   left_join(resta, by = c("cvegeo", "CVE_ZM")) %>% 
-  mutate(HHue = PRue - Rue,
-         HHaf = PRaf - Raf,
-         HHfb = PRfb - Rfb,
-         HHpb = PRpb - Rpb,
-         HHpo = PRpo - Rpo,
-         HHre = PRre - Rre,
-         HHva = PRva - Rva) %>% 
+  mutate(HHue = PRue - ue,
+         HHaf = PRaf - af,
+         HHfb = PRfb - fb,
+         HHpb = PRpb - pb,
+         HHpo = PRpo - po,
+         HHre = PRre - re,
+         HHva = PRva - va) %>% 
   select(cvegeo, sect, CVE_ZM, HHue,HHaf, HHfb, HHpb, HHpo, HHre, HHva)
 
 View(HH)
