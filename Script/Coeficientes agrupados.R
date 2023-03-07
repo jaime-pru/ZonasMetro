@@ -5,9 +5,8 @@ library(dplyr)
 
 # Leer datos desde un archivo xlsx
 
-datos <- read_excel("C:\\Users\\rpm0a\\OneDrive\\Documentos\\RepTemplates\\ZonasMetro\\Bases temporales\\Bases Agrupadas\\Bases Largas Agrupadas\\BLzm99a.xlsx")
+datos <- read_excel("C:\\Users\\rpm0a\\OneDrive\\Documentos\\RepTemplates\\ZonasMetro\\Bases temporales\\Bases Agrupadas\\Bases Largas Agrupadas\\BLzm19a.xlsx")
 
-View(subsec_mun)
 
 # Crear vector subsec_mun
 
@@ -47,11 +46,7 @@ tot_zm <- datos %>%  summarize(ue = sum(ue, na.rm = TRUE),
                                         po = sum(po, na.rm = TRUE), 
                                         re = sum(re, na.rm = TRUE), 
                                         va = sum(va, na.rm = TRUE))
-  
-View(subsec_mun)
-View(tot_mun)
-View(subsec_zm)
-View(subsec_mun_div)
+
 
 # Numerador
 
@@ -69,7 +64,6 @@ tot_zm_rep <- tot_zm[rep(1, nrow(subsec_zm)), ]
 
 subsec_tot_zm_div <- cbind(subsec_zm[, "sect"], subsec_zm[, c("ue", "af", "fb", "pb", "po", "re", "va")] / tot_zm_rep[, c("ue", "af", "fb", "pb", "po", "re", "va")])
 
-View(subsec_tot_zm_div)
 
 # Resultado final QL
 
@@ -82,7 +76,6 @@ QL <- left_join(subsec_mun_div, subsec_tot_zm_div, by = c("sect"))
 QL <- QL %>% mutate(QLue = ue.x / ue.y, QLaf = af.x / af.y, QLfb = fb.x/fb.y, QLpb = pb.x/pb.y, QLpo = po.x/po.y, QLre= re.x/re.y, QLva = va.x/va.y) %>% 
   select(-ue.x, -ue.y, -af.x, -af.y, -fb.x, -fb.y, -pb.x, -pb.y, -po.x, -po.y, -re.x, -re.y, -va.x, -va.y)
 
-View(QL)
 
 # Estimar coeficiente PR
 
@@ -97,7 +90,6 @@ PR <- subsec_mun %>%
          PRva = va.x / va.y) %>% 
   select(cvegeo, sect, CVE_ZM, PRue, PRaf, PRfb, PRpb, PRpo, PRre, PRva)
 
-View(PR)
 
 # Estimar coeficiente HH
 
@@ -111,7 +103,6 @@ tot_zm_rep2 <- tot_zm[rep(1, nrow(tot_mun)), ]
 
 resta <- cbind(tot_mun[, c("cvegeo", "CVE_ZM")], tot_mun[, c("ue", "af", "fb", "pb", "po", "re", "va")] / tot_zm_rep2[, c("ue", "af", "fb", "pb", "po", "re", "va")])
 
-View(resta)
 
 # Estimar HH
 
@@ -126,7 +117,6 @@ HH <- PR %>%
          HHva = PRva - va) %>% 
   select(cvegeo, sect, CVE_ZM, HHue,HHaf, HHfb, HHpb, HHpo, HHre, HHva)
 
-View(HH)
 
 # Estimar IHH
 
@@ -134,22 +124,21 @@ IHH <- HH %>%
   mutate_at(vars(HHue, HHaf, HHfb, HHpb, HHpo, HHre, HHva), ~ 1 - .) %>%
   rename_with(~ paste0("IHH", gsub("HH", "", .)), starts_with("HH"))
 
-View(IHH)
 
 # Unir datos 
 
-BLzm99a_final <- left_join(datos, QL, by = c("cvegeo", "sect", "CVE_ZM")) %>%
+BLzm19a_final <- left_join(datos, QL, by = c("cvegeo", "sect", "CVE_ZM")) %>%
   left_join(PR, by = c("cvegeo", "sect", "CVE_ZM")) %>%
   left_join(HH, by = c("cvegeo", "sect", "CVE_ZM")) %>%
   left_join(IHH, by = c("cvegeo", "sect", "CVE_ZM"))
 
-View(BLzm99a_final)
+View(BLzm19a_final)
 
 # Guardar archivo
 
 library(openxlsx)
 
-write.xlsx(BLzm99a_final, "BLzm99a_final.xlsx")
+write.xlsx(BLzm19a_final, "BLzm19a_final.xlsx")
 
 
 
