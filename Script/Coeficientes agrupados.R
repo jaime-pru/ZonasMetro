@@ -101,18 +101,15 @@ View(PR)
 
 # Estimar coeficiente HH
 
+# Replicar la única fila de tot_zm para tener la misma cantidad de filas que tot_mun
+
+tot_zm_rep2 <- tot_zm[rep(1, nrow(tot_mun)), ]
+
 # Estimar la parte que se resta
 
-resta <- tot_mun %>% 
-  left_join(tot_zm, by = c("CVE_ZM")) %>% 
-  mutate(Rue = ue.x / ue.y,
-         Raf = af.x / af.y,
-         Rfb = fb.x / fb.y,
-         Rpb = pb.x / pb.y,
-         Rpo = po.x / po.y,
-         Rre = re.x / re.y,
-         Rva = va.x / va.y) %>% 
-  select(cvegeo, CVE_ZM, Rue,Raf, Rfb, Rpb, Rpo, Rre, Rva)
+# Dividir subsec_zm entre tot_zm_rep y agregar la columna sect
+
+resta <- cbind(tot_mun[, c("cvegeo", "CVE_ZM")], tot_mun[, c("ue", "af", "fb", "pb", "po", "re", "va")] / tot_zm_rep2[, c("ue", "af", "fb", "pb", "po", "re", "va")])
 
 View(resta)
 
