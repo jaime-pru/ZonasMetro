@@ -7,7 +7,7 @@ library(dplyr)
 
 datos <- read_excel("C:\\Users\\rpm0a\\OneDrive\\Documentos\\RepTemplates\\ZonasMetro\\Bases temporales\\Bases Agrupadas\\Bases Largas Agrupadas\\BLzm99a.xlsx")
 
-View(datos)
+View(subsec_mun)
 
 # Crear vector subsec_mun
 
@@ -48,6 +48,10 @@ tot_zm <- datos %>%  summarize(ue = sum(ue, na.rm = TRUE),
                                         re = sum(re, na.rm = TRUE), 
                                         va = sum(va, na.rm = TRUE))
   
+View(subsec_mun)
+View(tot_mun)
+View(subsec_zm)
+View(subsec_mun_div)
 
 # Numerador
 
@@ -57,33 +61,33 @@ subsec_mun_div <- left_join(subsec_mun, tot_mun, by = c("cvegeo" = "cvegeo", "CV
 
 # Denominador
 
-# Unir vectores subsec_zm y tot_zm por CVE_ZM
+# Replicar la única fila de tot_zm para tener la misma cantidad de filas que subsec_zm
 
-subsec_tot_zm <- left_join(subsec_zm, tot_zm, by = "CVE_ZM")
+tot_zm_rep <- tot_zm[rep(1, nrow(subsec_zm)), ]
 
-# Dividir los valores de subsec_zm entre los valores de tot_zm por CVE_ZM
+# Dividir subsec_zm entre tot_zm_rep y agregar la columna sect
 
-subsec_tot_zm_div <- subsec_tot_zm %>%
-  mutate(ue.div = ue.x/ue.y, af.div = af.x/af.y, fb.div = fb.x/fb.y, pb.div = pb.x/pb.y, po.div = po.x/po.y, re.div = re.x/re.y, va.div = va.x/va.y) %>% 
-  select(-ue.x, -ue.y, -af.x, -af.y, -fb.x, -fb.y, -pb.x, -pb.y, -po.x, -po.y, -re.x, -re.y, -va.x, -va.y)
+subsec_tot_zm_div <- cbind(subsec_zm[, "sect"], subsec_zm[, c("ue", "af", "fb", "pb", "po", "re", "va")] / tot_zm_rep[, c("ue", "af", "fb", "pb", "po", "re", "va")])
+
+View(subsec_tot_zm_div)
 
 # Resultado final QL
 
 # Unir subsec_mun_div y subsec_tot_zm_div por CVE_ZM y cve_sub
 
-QL <- left_join(subsec_mun_div, subsec_tot_zm_div, by = c("CVE_ZM", "sect"))
+QL <- left_join(subsec_mun_div, subsec_tot_zm_div, by = c("sect"))
 
 # Dividir cada variable de subsec_mun_div entre la variable correspondiente de subsec_tot_zm_div
 
-QL <- QL %>% mutate(QLue = ue / ue.div, QLaf = af / af.div, QLfb = fb/fb.div, QLpb = pb/pb.div, QLpo = po/po.div, QLre= re/re.div, QLva = va/va.div) %>% 
-  select(-ue, -ue.div, -af, -af.div, -fb, -fb.div, -fb, -fb.div, -pb, -pb.div, -po, -po.div, -re, -re.div, -va, -va.div)
+QL <- QL %>% mutate(QLue = ue.x / ue.y, QLaf = af.x / af.y, QLfb = fb.x/fb.y, QLpb = pb.x/pb.y, QLpo = po.x/po.y, QLre= re.x/re.y, QLva = va.x/va.y) %>% 
+  select(-ue.x, -ue.y, -af.x, -af.y, -fb.x, -fb.y, -pb.x, -pb.y, -po.x, -po.y, -re.x, -re.y, -va.x, -va.y)
 
 View(QL)
 
 # Estimar coeficiente PR
 
 PR <- subsec_mun %>% 
-  left_join(subsec_zm, by = c("sect", "CVE_ZM")) %>% 
+  left_join(subsec_zm, by = c("sect")) %>% 
   mutate(PRue = ue.x / ue.y,
          PRaf = af.x / af.y,
          PRfb = fb.x / fb.y,
