@@ -5,7 +5,7 @@ library(dplyr)
 
 # Leer datos desde un archivo xlsx
 
-datos <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases temporales 2\\Totales Nacionales\\Base TN_04.xlsx")
+datos <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases temporales 2\\Totales Nacionales\\Base TN_19.xlsx")
 
 # Agrupando (Suma de cada sector)
 
@@ -61,6 +61,6 @@ View(datosagrupados)
 
 library(openxlsx)
 
-write.xlsx(datosagrupados, "BLzm19a.xlsx")
+write.xlsx(datosagrupados, "ZMTN19a.xlsx")
 
   
