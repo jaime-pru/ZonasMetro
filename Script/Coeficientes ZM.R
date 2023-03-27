@@ -5,8 +5,8 @@ library(dplyr)
 
 # Leer datos desde un archivo xlsx
 
-datos <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases temporales 2\\BLZM99.xlsx")
-datos2 <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases temporales 2\\Totales Nacionales\\Agrupadas\\ZMTN99a.xlsx")
+datos <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases temporales 2\\BLZM04.xlsx")
+datos2 <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases temporales 2\\Totales Nacionales\\Agrupadas\\ZMTN04a.xlsx")
 
 # Crear vector subsec_mun
 
@@ -26,7 +26,6 @@ tot_mun <- datos %>% summarize(ue = sum(ue, na.rm = TRUE),
                                                             po = sum(po, na.rm = TRUE), 
                                                             re = sum(re, na.rm = TRUE), 
                                                             va = sum(va, na.rm = TRUE))
-View(subsec_mun)
 
 # Crear vector subsec_zm
 
