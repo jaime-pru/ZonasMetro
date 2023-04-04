@@ -1,0 +1,129 @@
+---
+title: "Mi Documento R Markdown"
+author: "Alvaro Martínez, Leonardo Perez"
+date: "4 de abril de 2023"
+params:
+  zona: "1.01"
+---
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(readxl)
+Base_unica<- read.csv("Bases de datos/Base_unica.csv")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Tabla con los nombres y claves de ZM
+library(dplyr)
+
+tabla_unica <- Base_unica %>% 
+  select(NOM_ZM, CVE_ZM) %>% 
+  unique()
+View(tabla_unica)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Obtener el nombre de todas las variables en la base de datos
+variables <- names(Base_unica)
+
+# Filtrar las variables que deseas utilizar
+variables_utilizar <- variables[variables != "ID_VIV"]
+
+# Utilizar las variables filtradas en tus cálculos o análisis
+Base_zona <- Base_unica[Base_unica$CVE_ZM == params$zona, variables_utilizar]
+
+```
+
+#Ficha básica de la Zona Metropolitana
+
+A continuación se presentan los datos sociodemograficos principales de la zona metropolitana de ``r unique(Base_zona$NOM_ZM) `` con la clave``r params$zona ``. 
+
+- Cuenta con un total de ``r nrow(Base_zona[Base_zona$CVE_ZM == params$zona, "cv_mun", drop = FALSE]) `` municipios, los cuales son: 
+
+```{r echo = FALSE}
+library(knitr)
+zona <- params$zona
+Base_zona_subset <- subset(Base_zona, select = nom_mun)
+kable(Base_zona_subset, format = "html", col.names = '', caption = "__Municipios__")
+
+```
+
+## Estructura de la Población
+
+- Tiene una pobalción de ``r format(sum(Base_zona$POBTOT), big.mark=",") `` de habitantes, según el Censo de Población y Vivienda 2020. 
+
+- La estructura de población de la zona metropolitana de ``r unique(Base_zona$NOM_ZM) `` presenta de la siguiente forma:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Piramide poblacional
+# Reemplazar valores faltantes por NA
+
+# Crear los niveles ordenados de la variable grupo_edad
+niveles_edad <- c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", 
+                  "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", 
+                  "80-84", "85+")
+niveles_edad <- factor(niveles_edad, levels = niveles_edad)
+
+# Crear un data frame con los datos de población para cada grupo de edad y género
+datos_poblacion <- data.frame(
+  grupo_edad = niveles_edad,
+  poblacion_hombres = c(Base_zona$P_0A4_M, Base_zona$P_5A9_M, Base_zona$P_10A14_M, 
+                        Base_zona$P_15A19_M, Base_zona$P_20A24_M, Base_zona$P_25A29_M, 
+                        Base_zona$P_30A34_M, Base_zona$P_35A39_M, Base_zona$P_40A44_M, 
+                        Base_zona$P_45A49_M, Base_zona$P_50A54_M, Base_zona$P_55A59_M, 
+                        Base_zona$P_60A64_M, Base_zona$P_65A69_M, Base_zona$P_70A74_M, 
+                        Base_zona$P_75A79_M, Base_zona$P_80A84_M, Base_zona$P_85YMAS_M),
+  poblacion_mujeres = c(Base_zona$P_0A4_F, Base_zona$P_5A9_F, Base_zona$P_10A14_F, 
+                        Base_zona$P_15A19_F, Base_zona$P_20A24_F, Base_zona$P_25A29_F, 
+                        Base_zona$P_30A34_F, Base_zona$P_35A39_F, Base_zona$P_40A44_F, 
+                        Base_zona$P_45A49_F, Base_zona$P_50A54_F, Base_zona$P_55A59_F, 
+                        Base_zona$P_60A64_F, Base_zona$P_65A69_F, Base_zona$P_70A74_F, 
+                        Base_zona$P_75A79_F, Base_zona$P_80A84_F, Base_zona$P_85YMAS_F)
+)
+
+
+
+# Crear la pirámide poblacional
+library(ggplot2)
+
+# Crear la pirámide poblacional
+ggplot(datos_poblacion, aes(x = poblacion_mujeres, y = grupo_edad)) +
+  geom_bar(stat = "identity", aes(fill = "Mujeres"), width = 0.8) +
+  geom_bar(stat = "identity", aes(x = -poblacion_hombres, fill = "Hombres"), width = 0.8) +
+  scale_fill_manual(values = c("#AF00CA", "#003B85"), name = "Género", labels = c("Mujeres", "Hombres")) +
+  labs(x = "Población", y = "Grupo de edad", title = "Pirámide poblacional", caption = "Pirámide Poblacional. Elaboración propia. Fuente Censo de Población y Vivienda (INEGI, 2020)")
+  
+
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(sf)
+library(ggplot2)
+library(tmap)
+library(tmaptools)
+library(RColorBrewer)
+library(cartogram)
+# Carga los datos del archivo shapefile
+municipios <- st_read("Bases de datos/cartografía/00mun.shp")
+
+# Filtra los municipios de la zona metropolitana seleccionada
+municipios_zm <- municipios %>% filter(CVE_ZM == params$zona)
+
+# Crea el mapa utilizando ggplot y sf
+ggplot() +
+  geom_sf(data = municipios_zm) +
+  ggtitle(paste("Zona metropolitana de:", municipios_zm$NOM_ZM))
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#mapa 2
+tmap::tm_shape(municipios_zm) +
+  tmap::tm_borders() +
+  tmap::tm_fill("nom_mun", alpha = 0.9)
+  tmap::tm_basemap(providers$OpenStreetMap, alpha = 0.5)
+
+```
+

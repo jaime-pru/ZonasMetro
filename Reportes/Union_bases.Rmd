@@ -1,0 +1,91 @@
+---
+title: "Mi Documento R Markdown"
+author: "Alvaro"
+date: "4 de abril de 2023"
+---
+```{r}
+library(readxl)
+
+#Importación de las bases.
+zm99 <- read_excel("..\\Bases de datos\\zm99.xlsx")
+zm04 <- read_excel("..\\Bases de datos\\zm04.xlsx")
+zm09 <- read_excel("..\\Bases de datos\\zm09.xlsx")
+zm14 <- read_excel("..\\Bases de datos\\zm14.xlsx")
+zm19 <- read_excel("..\\Bases de datos\\zm19.xlsx")
+zma99 <- read_excel("..\\Bases de datos\\zm99.xlsx")
+zma04 <- read_excel("..\\Bases de datos\\zm04.xlsx")
+zma09 <- read_excel("..\\Bases de datos\\zm09.xlsx")
+zma14 <- read_excel("..\\Bases de datos\\zm14.xlsx")
+zma19 <- read_excel("..\\Bases de datos\\zm19.xlsx")
+# Leer archivo de variables sociodemográficas
+Base_sociodemo <- read_excel("..\\Bases de datos\\Base _sociodemo.xlsx")
+
+```
+
+```{r}
+
+library(dplyr)
+#Renombramiento de las variables de las bases por sector debido a que tenian el mismmo nombre. Se les agrego una "a" al inicio de cada variable con excepción de los identificadores.
+
+# Lista de variables a excluir de la modificación de nombres
+exclude_vars <- c("cvegeo", "CVE_ZM", "NOM_ZM", "cv_mun", "nom_mun", "cv_ent", "nom_ent")
+
+# Función para renombrar todas las variables excepto las excluidas
+rename_vars <- function(df) {
+  df %>%
+    rename_all(~ ifelse(. %in% exclude_vars, ., paste0("a", .)))
+}
+
+# Renombrar las variables de cada base de datos
+zma99 <- rename_vars(zma99)
+zma04 <- rename_vars(zma04)
+zma09 <- rename_vars(zma09)
+zma14 <- rename_vars(zma14)
+zma19 <- rename_vars(zma19)
+```
+
+```{r}
+# Eliminar variables no necesarias
+zm99 <- zm99[, !(names(zm99) %in% c("CVE_ZM", "NOM_ZM", "cv_mun", "nom_mun", "cv_ent", "nom_ent"))]
+zm04 <- zm04[, !(names(zm04) %in% c("CVE_ZM", "NOM_ZM", "cv_mun", "nom_mun", "cv_ent", "nom_ent"))]
+zm09 <- zm09[, !(names(zm09) %in% c("CVE_ZM", "NOM_ZM", "cv_mun", "nom_mun", "cv_ent", "nom_ent"))]
+zm14 <- zm14[, !(names(zm14) %in% c("CVE_ZM", "NOM_ZM", "cv_mun", "nom_mun", "cv_ent", "nom_ent"))]
+zm19 <- zm19[, !(names(zm19) %in% c("CVE_ZM", "NOM_ZM", "cv_mun", "nom_mun", "cv_ent", "nom_ent"))]
+
+zma99 <- zma99[, !(names(zma99) %in% c("CVE_ZM", "NOM_ZM", "cv_mun", "nom_mun", "cv_ent", "nom_ent"))]
+zma04 <- zma04[, !(names(zma04) %in% c("CVE_ZM", "NOM_ZM", "cv_mun", "nom_mun", "cv_ent", "nom_ent"))]
+zma09 <- zma09[, !(names(zma09) %in% c("CVE_ZM", "NOM_ZM", "cv_mun", "nom_mun", "cv_ent", "nom_ent"))]
+zma14 <- zma14[, !(names(zma14) %in% c("CVE_ZM", "NOM_ZM", "cv_mun", "nom_mun", "cv_ent", "nom_ent"))]
+```
+
+```{r}
+#Unión
+# Unir bases de datos por la variable cvegeo
+Base_unica <- merge(zm99, zm04, all = TRUE, by = "cvegeo")
+Base_unica <- merge(Base_unica, zm09, all = TRUE, by = "cvegeo")
+Base_unica <- merge(Base_unica, zm14, all = TRUE, by = "cvegeo")
+Base_unica <- merge(Base_unica, zm19, all = TRUE, by = "cvegeo")
+Base_unica <- merge(Base_unica, zma99, all = TRUE, by = "cvegeo")
+Base_unica <- merge(Base_unica, zma04, all = TRUE, by = "cvegeo")
+Base_unica <- merge(Base_unica, zma09, all = TRUE, by = "cvegeo")
+Base_unica <- merge(Base_unica, zma14, all = TRUE, by = "cvegeo")
+Base_unica <- merge(Base_unica, zma19, all = TRUE, by = "cvegeo")
+
+# Unir la base de variables sociodemográficas sin variables repetidas
+Base_sociodemo_uniq <- Base_sociodemo[!duplicated(names(Base_sociodemo))]
+
+# Unir las bases de datos con la base de variables sociodemográficas
+Base_unica <- merge(Base_unica, Base_sociodemo_uniq, all = TRUE, by = "cvegeo")
+
+```
+
+```{r}
+write.csv(Base_unica, file = "../Bases de datos/Base_unica.csv", row.names = FALSE)
+
+
+```
+
+
+
+
+

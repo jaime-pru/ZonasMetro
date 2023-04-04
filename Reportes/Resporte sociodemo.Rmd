@@ -29,14 +29,14 @@ library(shinyWidgets)
 
 # Importar archivos de variables económicas por año
 
-zm99 <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases de datos\\zm99.xlsx")
-zm04 <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases de datos\\zm04.xlsx")
-zm09 <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases de datos\\zm09.xlsx")
-zm14 <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases de datos\\zm14.xlsx")
-zm19 <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases de datos\\zm19.xlsx")
+zm99 <- read_excel("..\\Bases de datos\\zm99.xlsx")
+zm04 <- read_excel("..\\Bases de datos\\zm04.xlsx")
+zm09 <- read_excel("..\\Bases de datos\\zm09.xlsx")
+zm14 <- read_excel("..\\Bases de datos\\zm14.xlsx")
+zm19 <- read_excel("..\\Bases de datos\\zm19.xlsx")
 
 # Leer archivo de variables sociodemográficas
-Base_sociodemo <- read_excel("C:\\Users\\leope\\Documents\\RepTemplates\\ZonasMetro\\Bases de datos\\Base _sociodemo.xlsx")
+Base_sociodemo <- read_excel("..\\Bases de datos\\Base _sociodemo.xlsx")
 
 #Se crea la variable cve_geo
 Base_sociodemo$cvegeo <- paste(Base_sociodemo$CVE_ENT, Base_sociodemo$MUN, sep = "")
@@ -59,10 +59,10 @@ ui <- fluidPage(
               multiple = TRUE,
               selected = NULL),
   selectInput("variables2",
-              "Selecciona variables economicas a mostrar:",
-              choices = names(zm99), names(zm04), names(zm09), names(zm14), names(zm19)
-              multiple = TRUE,
-              selected = NULL),
+            "Selecciona variables economicas a mostrar:",
+            choices = c(names(zm99), names(zm04), names(zm09), names(zm14), names(zm19)),
+            multiple = TRUE,
+            selected = NULL),
   actionButton("ver_municipios", "Ver municipios"),
   tableOutput("informacion"),
   downloadButton("descargar", "Descargar tabla")
@@ -113,3 +113,4 @@ server <- function(input, output) {
   
 }
 shinyApp(ui, server)
+```

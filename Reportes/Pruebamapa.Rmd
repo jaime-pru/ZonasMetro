@@ -1,0 +1,25 @@
+---
+title: "Mapa de Zona Metropolitana"
+output: html_document
+params:
+  zona_metropolitana:
+    value: "1.01"
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(sf)
+library(ggplot2)
+# Carga los datos del archivo shapefile
+municipios <- st_read("C:/Users/Dell/Documents/ZonasMetro/Bases de datos/cartografía/00mun.shp")
+
+# Filtra los municipios de la zona metropolitana seleccionada
+municipios_zm <- municipios %>% filter(CVE_ZM == params$zona_metropolitana)
+
+# Crea el mapa utilizando ggplot y sf
+mapa <- ggplot() +
+  geom_sf(data = municipios_zm) +
+  ggtitle(paste("Zona metropolitana:", params$zona_metropolitana))
+ggsave("mapa.png")
+print(mapa)
+```
